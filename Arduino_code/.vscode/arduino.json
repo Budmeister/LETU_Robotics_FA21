@@ -1,0 +1,5 @@
+{
+    "board": "arduino:avr:uno",
+    "port": "COM14",
+    "sketch": "serial_test\\serial_test.ino"
+}

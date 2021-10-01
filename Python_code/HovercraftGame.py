@@ -1,8 +1,5 @@
 
 
 class HovercraftGame:
-    def loop(self):
-        pass
-
-    def process_event(self, event):
-        pass
+    def loop(self, event):
+        return False
