@@ -81,12 +81,15 @@ if __name__ == "__main__":
     if game.__class__.loop is not HovercraftGame.loop:
         def loop():
             try:
-                running = True
-                while running:
+                while True:
                     if event_ready():
-                        running = game.loop(get_event())
+                        out = game.loop(get_event())
                     else:
-                        running = game.loop(None)
+                        out = game.loop(None)
+                    if out == "Done":
+                        break
+                    if out is not None:
+                        ser.write(bytes(out, "utf-8"))
             finally:
                 ser.close()
                 print("Serial closed")
