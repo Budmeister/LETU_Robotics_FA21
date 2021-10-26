@@ -12,7 +12,7 @@ void setup(){
     Mirf.spi = &MirfHardwareSpi;
     Mirf.init();
 
-    Mirf.setRADDR((char*) "Rec01");
+    Mirf.setTADDR((char*) "Rec01");
 
     Mirf.payload = RF_PAYLOAD;
     Mirf.channel = 3;
@@ -23,11 +23,17 @@ void setup(){
 }
 
 void loop(){
-    if(!Mirf.dataReady())
-        return;
-    char data[RF_PAYLOAD];
-    Serial.println("Data received");
-    Mirf.getData(data);
+    // char data[RF_PAYLOAD];
+//    Mirf.dataReady();
+//    if(Mirf.isSending())
+//        return;
+//    char* data = "Hello..\n";
+    Serial.println("Sending data");
+    char data[] = {
+        0,1,2,3
+    };
+    Mirf.send(data);
+    Serial.print("Sent: ");
     for(int i = 0; i < RF_PAYLOAD; i++)
         Serial.print((int) data[i]);
     Serial.println();

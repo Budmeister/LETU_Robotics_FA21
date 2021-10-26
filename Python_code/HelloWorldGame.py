@@ -9,4 +9,5 @@ class HelloWorldGame(HovercraftGame):
         if event is not None:
             print(event)
             self.count += 1
-        return None if self.count < 10 else "Done"
+        # return None if self.count < 10 else "Done"
+        return None

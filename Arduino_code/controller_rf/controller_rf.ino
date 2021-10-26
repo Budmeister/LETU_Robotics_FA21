@@ -19,18 +19,18 @@ LX, LY: 1 byte ea
 #define LX_CONTROL 16
 #define LY_CONTROL 32
 
-#define A_PIN 4
+#define A_PIN 6
 #define B_PIN 5
-#define X_PIN 6
-#define Y_PIN 7
-#define R_PIN 8
-#define LX_PIN 9
-#define LY_PIN 10
+#define X_PIN 4
+#define Y_PIN 3
+#define R_PIN 2
+#define LX_PIN A0
+#define LY_PIN A1
 
 void setup(){
     Serial.begin(9600);
-    Mirf.cePin = 7;
-    Mirf.csnPin = 8;
+    Mirf.cePin = 9;
+    Mirf.csnPin = 10;
 
     Mirf.spi = &MirfHardwareSpi;
     Mirf.init();
@@ -38,16 +38,16 @@ void setup(){
     Mirf.setTADDR((byte*) MAIN_ADDR);
 
     Mirf.payload = RF_PAYLOAD;
-    Mirf.channel = 10;
+    Mirf.channel = 3;
     Mirf.config();
 
-    pinMode(A_PIN, OUTPUT);
-    pinMode(B_PIN, OUTPUT);
-    pinMode(X_PIN, OUTPUT);
-    pinMode(Y_PIN, OUTPUT);
-    pinMode(R_PIN, OUTPUT);
-    pinMode(LX_PIN, OUTPUT);
-    pinMode(LY_PIN, OUTPUT);
+    pinMode(A_PIN, INPUT_PULLUP);
+    pinMode(B_PIN, INPUT_PULLUP);
+    pinMode(X_PIN, INPUT_PULLUP);
+    pinMode(Y_PIN, INPUT_PULLUP);
+    pinMode(R_PIN, INPUT_PULLUP);
+    pinMode(LX_PIN, INPUT);
+    pinMode(LY_PIN, INPUT);
 
     Serial.println("Setup complete");
 
@@ -68,16 +68,43 @@ X: 1 bit
 Y: 1 bit
 R: 1 bit
 */
-char* getData(){
-    char a = digitalRead(A_PIN);
-    char b = digitalRead(B_PIN);
-    char x = digitalRead(X_PIN);
-    char y = digitalRead(Y_PIN);
-    char r = digitalRead(R_PIN);
-    int lx = analogRead(LX_PIN);
-    int ly = analogRead(LY_PIN);
+uint8_t a, b, x, y, r;
+int lx, ly;
 
-    char data[RF_PAYLOAD];
+void printData(){
+    Serial.print(lx);
+    Serial.print(" ");
+    Serial.print(ly);
+    Serial.print(" ");
+    Serial.print(a);
+    Serial.print(b);
+    Serial.print(x);
+    Serial.print(y);
+    Serial.print(r);
+    Serial.println();
+}
+
+void printData(uint8_t* data){
+    for(int i = 0; i < RF_PAYLOAD; i++){
+        Serial.print(data[i], HEX);
+        Serial.print(" ");
+    }
+    Serial.println();
+}
+
+void loop(){
+    while(Mirf.isSending());
+    
+    // pack data
+    a = digitalRead(A_PIN);
+    b = digitalRead(B_PIN);
+    x = digitalRead(X_PIN);
+    y = digitalRead(Y_PIN);
+    r = digitalRead(R_PIN);
+    lx = analogRead(LX_PIN);
+    ly = analogRead(LY_PIN);
+
+    uint8_t data[RF_PAYLOAD];
     data[RF_PAYLOAD - 1] = 
             (a << A_CONTROL) |
             (b << B_CONTROL) |
@@ -85,17 +112,11 @@ char* getData(){
             (y << Y_CONTROL) |
             (r << R_CONTROL);
     data[RF_PAYLOAD - 2] = ly & 0x00ff;
-    data[RF_PAYLOAD - 3] = ly & 0xff00;
+    data[RF_PAYLOAD - 3] = (ly & 0xff00) >> 8;
     data[RF_PAYLOAD - 4] = lx & 0x00ff;
-    data[RF_PAYLOAD - 5] = lx & 0xff00;
+    data[RF_PAYLOAD - 5] = (lx & 0xff00) >> 8;
     for(int i = 0; i < RF_PAYLOAD - 5; i++)
         data[i] = 0;
-    return (char*) data;
-}
 
-void loop(){
-    delay(1000);
-    Serial.println("hello_world");
-    
-    Mirf.send(getData());
+    Mirf.send(data);
 }
