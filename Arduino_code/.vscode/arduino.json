@@ -1,6 +1,5 @@
 {
-    "board": "arduino:avr:nano",
-    "port": "COM17",
-    "sketch": "controller_rf\\controller_rf.ino",
-    "configuration": "cpu=atmega328old"
+    "board": "arduino:avr:uno",
+    "port": "COM15",
+    "sketch": "perpetual_ir_receiver\\perpetual_ir_receiver.ino"
 }
