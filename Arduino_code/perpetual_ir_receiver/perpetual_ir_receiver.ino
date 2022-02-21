@@ -8,6 +8,8 @@
 
 #include <IRremote.hpp>
 
+int outputLED = 10;
+
 void setup() {
     Serial.begin(115200);
     // Just to know which program is running on my Arduino
@@ -22,6 +24,9 @@ void setup() {
     printActiveIRProtocols(&Serial);
     Serial.print(F("at pin "));
     Serial.println(IR_RECEIVE_PIN);
+
+    pinMode(outputLED, OUTPUT);
+    digitalWrite(outputLED, LOW);
 }
 
 void loop() {
@@ -61,6 +66,9 @@ void loop() {
             // do something else
         } else if (IrReceiver.decodedIRData.command == 0x42) {
             Serial.println("Input received!");
+            digitalWrite(outputLED, HIGH);
+        } else{
+            digitalWrite(outputLED, LOW);
         }
     }
 }
