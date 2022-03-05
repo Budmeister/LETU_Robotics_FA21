@@ -11,21 +11,23 @@ Controls:
 A, B, X, Y, R: 1 bit ea
 LX, LY: 1 byte ea
 */
-#define A_CONTROL 4
-#define B_CONTROL 3
-#define X_CONTROL 2
-#define Y_CONTROL 1
-#define R_CONTROL 0
-#define LX_CONTROL 16
-#define LY_CONTROL 32
+#define A_CONTROL 5
+#define B_CONTROL 4
+#define X_CONTROL 3
+#define Y_CONTROL 2
+#define LB_CONTROL 1
+#define RB_CONTROL 0
+#define JX_CONTROL 16
+#define JY_CONTROL 32
 
-#define A_PIN 6
-#define B_PIN 5
-#define X_PIN 4
-#define Y_PIN 3
-#define R_PIN 2
-#define LX_PIN A0
-#define LY_PIN A1
+#define A_PIN 7
+#define B_PIN 6
+#define X_PIN 5
+#define Y_PIN 4
+#define LB_PIN 3
+#define RB_PIN 2
+#define JX_PIN A0
+#define JY_PIN A1
 
 void setup(){
     Serial.begin(9600);
@@ -53,42 +55,45 @@ LY: 2 bytes
 Btns: 1 byte
 
 Btns: 
-0: 3 bits
+0: 2 bits
 A: 1 bit
 B: 1 bit
 X: 1 bit
 Y: 1 bit
+L: 1 bit
 R: 1 bit
 */
-byte a, b, x, y, r;
-int lx, ly;
+byte a, b, x, y, lb, rb;
+int jx, jy;
 
 void unpackData(){
     byte data[RF_PAYLOAD];
     Mirf.getData(data);
 
-    ly = (unsigned int) (data[RF_PAYLOAD - 2]
+    jy = (unsigned int) (data[RF_PAYLOAD - 2]
             | (data[RF_PAYLOAD - 3] << 8));
-    lx = (unsigned int) (data[RF_PAYLOAD - 4]
+    jx = (unsigned int) (data[RF_PAYLOAD - 4]
             | (data[RF_PAYLOAD - 5] << 8));
     a = (data[RF_PAYLOAD - 1] >> A_CONTROL) & 0x1;
     b = (data[RF_PAYLOAD - 1] >> B_CONTROL) & 0x1;
     x = (data[RF_PAYLOAD - 1] >> X_CONTROL) & 0x1;
     y = (data[RF_PAYLOAD - 1] >> Y_CONTROL) & 0x1;
-    r = (data[RF_PAYLOAD - 1] >> R_CONTROL) & 0x1;
+    lb = (data[RF_PAYLOAD - 1] >> LB_CONTROL) & 0x1;
+    rb = (data[RF_PAYLOAD - 1] >> RB_CONTROL) & 0x1;
 
 }
 
 void printData(){
-    Serial.print(lx);
+    Serial.print(jx);
     Serial.print(" ");
-    Serial.print(ly);
+    Serial.print(jy);
     Serial.print(" ");
     Serial.print(a);
     Serial.print(b);
     Serial.print(x);
     Serial.print(y);
-    Serial.print(r);
+    Serial.print(lb);
+    Serial.print(rb);
     Serial.println();
 }
 
